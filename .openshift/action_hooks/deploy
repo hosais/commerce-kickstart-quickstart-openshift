@@ -49,10 +49,12 @@ then
   mkdir -p ${DRUPAL_PRIVATE_DIR}
 
   pushd ${OPENSHIFT_REPO_DIR}php
-  echo
+  
+echo
   echo "Creating a new Drupal site at ${DRUPAL_SITE_DIR}/default"
   echo
-  if ! drush site-install standard --site-name=${OPENSHIFT_APP_NAME} --account-pass=openshift_changeme --db-url=mysql://$OPENSHIFT_MYSQL_DB_USERNAME:$OPENSHIFT_MYSQL_DB_PASSWORD@$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/$OPENSHIFT_APP_NAME --yes
+# install commerce kickstart profile
+  if ! drush site-install commerce_kickstart --site-name=${OPENSHIFT_APP_NAME} --account-pass=openshift_changeme --db-url=mysql://$OPENSHIFT_MYSQL_DB_USERNAME:$OPENSHIFT_MYSQL_DB_PASSWORD@$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/$OPENSHIFT_APP_NAME --yes
   then
     echo "Unable to configure your Drupal installation"
     echo
@@ -104,7 +106,8 @@ END
 
   popd
   echo
-  echo "Drupal is now configured"
+# chnage drupal commerce text
+  echo "Drupal Commerce Kickstart is now configured"
   echo
   echo "===================================================="
   echo "  Drupal-Admin login: admin"
@@ -112,6 +115,7 @@ END
   echo "  Don't forget to change your drupal admin password!"
   echo "===================================================="
 else
-  echo "Drupal is already configured.  Delete settings.php to rerun setup"
+# chnage drupal commerce text
+  echo "Drupal Commerce kickstart is already configured.  Delete settings.php to rerun setup"
 fi
 echo

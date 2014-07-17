@@ -3,6 +3,7 @@
 # available.  Otherwise it will execute while your application is stopped
 # before the deploy step.  This script gets executed directly, so it
 # could be python, php, ruby, etc. 
+# hosais modified
 
 set -e
 
@@ -28,7 +29,7 @@ cat >$OPENSHIFT_HOMEDIR/.drush/drushrc.php <<EOF
 EOF
 
 #
-# If there is no current download of Drupal, create one.
+# If there is no current download of Drupal, create one. [delete it for update]
 #
 if [ ! -d "${OPENSHIFT_DATA_DIR}downloads/current" ]
 then
@@ -38,11 +39,18 @@ then
   echo
 
   mkdir -p ${OPENSHIFT_DATA_DIR}downloads
-  if ! drush dl drupal --destination=${OPENSHIFT_DATA_DIR}downloads --yes
+  #if ! drush dl drupal --destination=${OPENSHIFT_DATA_DIR}downloads --yes
+  #then
+  #  echo "ERROR: Unable download and install Drupal."
+  #  exit 7
+  #fi
+#replaced by commerce_kickstart ********************************
+ if ! $DRUSH_SCRIPT dl commerce_kickstart --destination=${OPENSHIFT_DATA_DIR}downloads --yes
   then
-    echo "ERROR: Unable download and install Drupal."
+    echo "ERROR: Unable download and install Drupal Commerce Kickstart."
     exit 7
-  fi
+ fi
+#**********************************************************
 
   #
   # Link the /current symlink to the latest Drupal instance
@@ -61,10 +69,12 @@ then
 
   patch ${DRUPAL_INSTALL_DIR}/.htaccess < ${OPENSHIFT_REPO_DIR}.openshift/.htaccess.patch
 
-  echo "Drupal installed to $DRUPAL_INSTALL_DIR"
+# change the kickstart text
+   echo "Drupal Commerce Kickstart installed to $DRUPAL_INSTALL_DIR"
 else
+# change the kickstart text
   DRUPAL_INSTALL_DIR=$(readlink -f ${OPENSHIFT_DATA_DIR}downloads/current)
-  echo "Drupal is already installed at $DRUPAL_INSTALL_DIR"
+  echo "Drupal Commerce Kickstart is already installed at $DRUPAL_INSTALL_DIR"
 fi
 
 echo
@@ -86,6 +96,7 @@ fi
 ln -sfn ../../data/downloads/current ${OPENSHIFT_REPO_DIR}php
 if [ ! -d "${OPENSHIFT_REPO_DIR}php" ]
 then  
-  echo "ERROR: Unable to link the PHP directory, as the current Drupal instance is not a valid directory."
+# change the kickstart text
+  echo "ERROR: Unable to link the PHP directory, as the current Drupal Commerce Kickstart instance is not a valid directory."
   exit 8
 fi
