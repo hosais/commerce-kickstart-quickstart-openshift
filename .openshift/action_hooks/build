@@ -45,7 +45,7 @@ then
   #  exit 7
   #fi
 #replaced by commerce_kickstart ********************************
- if ! $DRUSH_SCRIPT dl commerce_kickstart --destination=${OPENSHIFT_DATA_DIR}downloads --yes
+ if ! drush dl commerce_kickstart --destination=${OPENSHIFT_DATA_DIR}downloads --yes
   then
     echo "ERROR: Unable download and install Drupal Commerce Kickstart."
     exit 7
