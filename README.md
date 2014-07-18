@@ -24,7 +24,7 @@ the [build](.openshift/action_hooks/build) and [deploy](.openshift/action_hooks/
 Updates
 -------
 You can update the lastest core code (commerce kickstart) by delete current/ 
-symbolic link in your downloads. Then run update by drush. 
+symbolic link in your downloads. Re-build your application. Then run update by drush. 
 Of course, do not forget to backup first.
 
 You can use Drupal's module management UI to download new versions of
