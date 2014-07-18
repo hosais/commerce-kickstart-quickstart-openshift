@@ -1,84 +1,36 @@
-Drupal on OpenShift
+This quick start based on the Quickstart of Drupal on OpenShift
 ===================
+How to use it:
+Create an Drupal application on openshift web site and change the code to point 
+to this github repo. The mysql, and php cartriges will be created by openshift. 
 
-This Git repository helps you get up and running quickly w/ a Drupal
-installation on OpenShift. It defaults to using MySQL, so when creating
-the application you'll want to select and install both MySQL and Cron
-(for running scheduled tasks). 
-
-    rhc app create drupal php-5.3 mysql-5.1 cron
-
+This quickstart has scripts to deploy commerce kickstart, following the same 
+layout like quickstart of drupal on onpenshift. Since using drush to install 
+commerce kickstart is complicated (there are many parameters for setup a shop) 
+so after the application is built, the admin needs to install it.  
+ 
 The first time you push changes to OpenShift, the build script
-will download the latest stable version of Drupal (currently 7.x) and
-install it into the 'downloads' data directory.  It will then create and
-deploy a default profile for your application, using MySQL into your
-'sites' directory. Any new modules you add or files uploaded to the site
-will be placed under this directory. If you want to reconfigure Drupal
-from a clean state, delete the 'sites' directory (you may need to add
-write permissions to the sites/default directory, which Drupal
-automatically makes readonly) and push a non-significant change to your
-application Git repo.
+will download the latest version of commerce kickstart. 
 
-Because none of your application code is checked into Git and lives
-entirely in your data directory, if this application is set to scalable
-the new gears will have empty data directories and won't serve requests
-properly.  If you'd like to make the app scalable, you'll need to:
+To make it scalable, please refer to the quickstart of drupal.
 
-1. Check the contents of php/* into your Git repository (in the php/*
-   dir)
-2. Only install new modules via Drush from the head gear, and then
-   commit those changes to the Git repo
-3. Use a background task to copy file contents from gear to gear
+If you want to have full control of the code all under git, then you need to checkout 
+php directory to local.
+
 
 All of the scripts used to deploy and configure Drupal are located in
 the [build](.openshift/action_hooks/build) and [deploy](.openshift/action_hooks/deploy) hooks.
 
-Using Drush
------------
-
-The Drush management tool for Drupal is automatically installed
-and you can simply use it while ssh'd into your gear.
-
-    rhc ssh drupal
-    drush --help
-
-Drush has many helpful commands for managing your installation, such as:
-
-    drush st			# Show status of Drush and the Drupal site
-    drush dl <project>	# Download module/theme
-    drush en <project>	# Enable module/theme
-    drush dis <project>	# Disable module/theme
-    drush cc all		# Clear all cache
-    drush core-cron     # Run cron
-    drush updb			# Apply database updates
-
-
-Running on OpenShift
---------------------
-
-Create an account at https://www.openshift.com
-
-Create a php-5.3 application with MySQL and Cron support.
-
-    rhc app create drupal php-5.3 mysql-5.1 cron --from-code=git://github.com/openshift/drupal-quickstart.git
-
-That's it, you can now checkout your application at:
-    http://drupal-$yournamespace.rhcloud.com
-
-Default Credentials
--------------------
-<table>
-<tr><td>Default Admin Username</td><td>admin</td></tr>
-<tr><td>Default Admin Password</td><td>openshift_changeme</td></tr>
-</table>
-
 Updates
 -------
+You can update the lastest core code (commerce kickstart) by delete current/ 
+symbolic link in your downloads. Then run update by drush. 
+Of course, do not forget to backup first.
 
 You can use Drupal's module management UI to download new versions of
 modules into your data directory.
 
-Repo layout
+Repo layout (same as quickstart of drupal)
 -----------
 
 php/ - At deploy time, the build script will symlink this directory to a
