@@ -62,6 +62,14 @@ then
 
   mv $DRUPAL_INSTALL_DIR/sites $DRUPAL_INSTALL_DIR/sites.original
 
+  # if there is no current/ and exist $DRUPAL_SITE_DIR, link the site directory
+  # This may mean it is applying update process...
+  if [ -d "$DRUPAL_SITE_DIR" ]
+  then
+    echo "This may be a update process...., link sites to new downloaded code   
+    ln -sfn ../../sites $DRUPAL_INSTALL_DIR/sites
+  fi
+
   #
   # Ensure there is a default health check
   #
