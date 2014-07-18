@@ -55,12 +55,12 @@ then
 # only the environment directories were built and checked
 #*********************************************** 
 
-  #
+  # DELETE this part and will do it after installation, because /default/settings.php cannot be generated before without installation.
   # Use the temporary directories that OpenShift provides, and set
   # the private path to be inside the data dir
   #
-  echo "\$conf['file_private_path'] = \$src['OPENSHIFT_DATA_DIR'] . 'private/';" >> ${DRUPAL_SETTINGS}
-  echo "\$conf['file_temporary_path'] = \$src['OPENSHIFT_TMP_DIR'] . 'drupal/';" >> ${DRUPAL_SETTINGS}
+  #echo "\$conf['file_private_path'] = \$src['OPENSHIFT_DATA_DIR'] . 'private/';" >> ${DRUPAL_SETTINGS}
+  #echo "\$conf['file_temporary_path'] = \$src['OPENSHIFT_TMP_DIR'] . 'drupal/';" >> ${DRUPAL_SETTINGS}
 
   popd
   echo
