@@ -1,7 +1,7 @@
 #!/bin/bash
 # This deploy hook gets executed after dependencies are resolved and the
 # build hook has been run but before the application has been started back
-# up again.  This script gets executed directly, so it could be python, php,
+# up again. This script gets executed directly, so it could be python, php,
 # ruby, etc.
 
 set -e
@@ -18,7 +18,7 @@ then
 fi
 
 #
-# Create a new Drupal site.  You can delete your ${OPENSHIFT_DATA_DIR}sites
+# Create a new Drupal site. You can delete your ${OPENSHIFT_DATA_DIR}sites
 # folder to run this step again.
 #
 if [ ! -f "${DRUPAL_SITE_DIR}/default/settings.php" ]
@@ -26,7 +26,7 @@ then
 
   #
   # Automatic installation only works with mysql.
-  # 
+  #
   if [ -z "$OPENSHIFT_MYSQL_DB_HOST" ]
   then
       echo 1>&2
@@ -50,10 +50,52 @@ then
 
   pushd ${OPENSHIFT_REPO_DIR}php
   
- 
-# remove commerce kickstart automatical installation due to complicated with drush
-# only the environment directories were built and checked
-#*********************************************** 
+echo
+echo "Creating a new Drupal site at ${DRUPAL_SITE_DIR}/default"
+  echo
+# install commerce kickstart profile
+  if ! drush site-install commerce_kickstart --site-name=${OPENSHIFT_APP_NAME} --account-pass=openshift_changeme --db-url=mysql://$OPENSHIFT_MYSQL_DB_USERNAME:$OPENSHIFT_MYSQL_DB_PASSWORD@$OPENSHIFT_MYSQL_DB_HOST:$OPENSHIFT_MYSQL_DB_PORT/$OPENSHIFT_APP_NAME --yes
+  then
+    echo "Unable to configure your Drupal installation"
+    echo
+exit 10
+  fi
+
+  #
+  # Tweak settings.php to use the OpenShift environment variables instead of
+  # the values passed to Drush.
+  #
+  chmod u+w ${DRUPAL_SETTINGS} ${DRUPAL_SITE_DIR}/default
+  cat ${DRUPAL_SETTINGS} | ruby -e "puts STDIN.read.gsub(/\\\$databases\s*=\s*array.*?\)\;/m, '# Replaced by OpenShift')" > ${OPENSHIFT_TMP_DIR}/settings.php
+  cat << "END" >> ${OPENSHIFT_TMP_DIR}/settings.php
+
+/**
+ * For maximum portability, use the OpenShift environment variables.
+ */
+
+// When run from Drush, only $_ENV is available. Might be a bug
+if (array_key_exists('OPENSHIFT_APP_NAME', $_SERVER)) {
+  $src = $_SERVER;
+} else {
+  $src = $_ENV;
+}
+$databases = array (
+  'default' =>
+  array (
+    'default' =>
+    array (
+      'database' => $src['OPENSHIFT_APP_NAME'],
+      'username' => $src['OPENSHIFT_MYSQL_DB_USERNAME'],
+      'password' => $src['OPENSHIFT_MYSQL_DB_PASSWORD'],
+      'host' => $src['OPENSHIFT_MYSQL_DB_HOST'],
+      'port' => $src['OPENSHIFT_MYSQL_DB_PORT'],
+      'driver' => 'mysql',
+      'prefix' => '',
+    ),
+  ),
+);
+END
+  cat ${OPENSHIFT_TMP_DIR}/settings.php > ${DRUPAL_SETTINGS}
 
   #
   # Use the temporary directories that OpenShift provides, and set
@@ -63,10 +105,17 @@ then
   echo "\$conf['file_temporary_path'] = \$src['OPENSHIFT_TMP_DIR'] . 'drupal/';" >> ${DRUPAL_SETTINGS}
 
   popd
+echo
+# chnage drupal commerce text
+  echo "Drupal Commerce Kickstart is now configured"
   echo
-
+echo "===================================================="
+  echo " Drupal-Admin login: admin"
+  echo " Drupal-Admin password: openshift_changeme"
+  echo " Don't forget to change your drupal admin password!"
+  echo "===================================================="
 else
 # chnage drupal commerce text
-  echo "Drupal Commerce kickstart is already configured.  Delete settings.php to rerun setup"
+  echo "Drupal Commerce kickstart is already configured. Delete settings.php to rerun setup"
 fi
 echo
