@@ -66,7 +66,7 @@ then
   # This may mean it is applying update process...
   if [ -d "$DRUPAL_SITE_DIR" ]
   then
-    echo "This may be a update process...., link sites to new downloaded code   
+    echo "This may be a update process...., link sites to new downloaded code"   
     ln -sfn ../../sites $DRUPAL_INSTALL_DIR/sites
   fi
 
